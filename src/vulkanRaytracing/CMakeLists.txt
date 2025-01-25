@@ -1,4 +1,4 @@
-set(NAME "App")
+set(NAME "vulkanRaytracing")
 
 include (${PROJECT_SOURCE_DIR}/cmake/StaticAnalyzers.cmake)
 
