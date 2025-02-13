@@ -7,7 +7,7 @@ add_executable(${NAME} main.cpp)
 target_compile_features(${NAME} PRIVATE cxx_std_20)
 target_link_libraries(${NAME} PRIVATE project_warnings) # Add other required libraries as needed
 
-if(CMAKE_SYSTEM_NAME STREQUAL "UNIX")
+if(UNIX)
     add_custom_command(
         TARGET ${NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
