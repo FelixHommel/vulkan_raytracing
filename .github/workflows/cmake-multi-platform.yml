@@ -31,8 +31,9 @@ jobs:
 
       - name: Test
         run: |
-          llvm-profdata merge -sparse default.profraw -o coverage.profdata
-          cmake --build --target test
+          export LLVM_PROFILE_FILE="coverage-%p.profraw"
+          cmake --build build --target test
+          llvm-profdata merge -sparse coverage-*.profraw -o coverage.profdata
 
       - name: Generate coverage report
         run: |
