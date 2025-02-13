@@ -77,14 +77,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies Linux
-        if: runner.os == "Linux"
-        run: sudo apt-get update && sudo apt-get install -y cmake g++ ninja-build
-
-      - name: Install dependencies Windows
-        if: runner.os == "Windows"
-        run: choco install cmake ninja
-
       - name: Set reusable strings
         # Turn repeated input strings (such as the build output directory) into step outputs. 
         # These step outputs can be used throughout the workflow file.
