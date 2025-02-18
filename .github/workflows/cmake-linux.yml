@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
 
       matrix:
-        name: "Ubuntu Release",
+        name: "Ubuntu Release"
         os: [ubuntu-latest]
         buildType: [Release]
         cc: [gcc, clang]
