@@ -1,0 +1,61 @@
+name: CMake build on Linux
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+
+jobs:
+  build:
+    name: Build (Ubuntu Release)
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        os: [ubuntu-latest]
+        buildType: [Release]
+        c_compiler: [gcc, clang]
+        generator: [Ninja]
+        include:
+          - os: ubuntu-latest
+            c_compiler: gcc
+            cxx_compiler: g++
+          - os: ubuntu-latest
+            c_compiler: clang
+            cxx_compiler: clang++
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set reusable Strings
+        id: strings
+        run: echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y ninja-build vulkan-tools libvulkan-dev
+
+      - name: Configure CMake
+        run: |
+          cmake \
+            -S ${{ github.workspace }} \
+            -B ${{ steps.strings.outputs.build-output-dir }} \
+            -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }} \
+            -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
+            -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} \
+            -G ${{ matrix.generator }}
+
+      - name: Build
+        run: |
+          cmake \
+            --build ${{ steps.strings.outputs.build-output-dir }} \
+            --config ${{ matrix.buildType }}
+
+      - name: Test
+        working-directory: ${{ steps.strings.outputs.build-output-dir }}
+        run: ctest --build-config ${{ matrix.buildType }}
