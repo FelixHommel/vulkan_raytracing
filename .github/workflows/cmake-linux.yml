@@ -1,0 +1,114 @@
+name: CMake build on Linux
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_requests:
+    branches: [ "main", "dev" ]
+
+jobs:
+  coverage:
+    name: Build (${{ matrix.config.name }})
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+            name: "Ubuntu Debug",
+            os: ubuntu-latest,
+            buildType: "Debug",
+            cc: "clang",
+            cxx: "clang++",
+            generator: "Ninja"
+        }
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y ninja-build vulkan-tools libvulkan-dev clang llvm lcov
+
+      - name: Configure CMake
+        run: |
+          cmake \
+            -S . \
+            -B build \
+            -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} \
+            -DCMAKE_C_COMPILER=${{ matrix.config.cc }} \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config.buildType }} \
+            -G ${{ matrix.config.generator }} \
+            -DENABLE_COERAGE=ON
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Test
+        run: ctest --build-config ${{ matrix.config.buildType }}
+
+      - name: Export environemtnt variable for coverage data
+        run: LVM_PROFILE_FILE="test.profraw" build/${{ matrix.config.buildType }}/src/test/unitTests
+
+      - name: Create coverage report
+        run: |
+          llvm-profdata merge -sparse -output=coverage.profdata test.profraw
+          llvm-cov report -instr-profile=coverage.prodata --use-color --format=lcov > coverage.lcov
+
+      - name: Upload to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./coverage.lcov
+
+  build:
+    name: Build (${{ matrix.config.name }})
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+            name: "Ubuntu Release",
+            os: ubuntu-latest,
+            buildType: "Release",
+            cc: "gcc",
+            cxx: "g++",
+            generator: "Ninja"
+        }
+
+    steps:
+      -name: Checkout repository
+       uses: actions/checkout@v4
+
+      - name: Set reusable Strings
+        id: strings
+        run: echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y ninja-build vulkan-tools libvulkan-dev
+
+      - name: Configure CMake
+        run: |
+          cmake \
+            -S ${{ github.workspace }} \
+            -B ${{ steps.strings.outputs.build-output-dir }} \
+            -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} \
+            -DCMAKE_C_COMPILER=${{ matrix.config.cc }} \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config.buildType }} \
+            -G ${{ matrix.config.generator }}
+
+      - name: Build
+        run: |
+          cmake \
+            --build ${{ steps.strings.outputs.build-output-dir }} \
+            --config ${{ matrix.buildType }}
+
+      - name: Test
+        working-directory: ${{ steps.strings.outputs.build-output-dir }}
+        run: |
+          ctest --build-config ${{ matrix.buildType }}
