@@ -20,7 +20,7 @@ if(CLANG_FORMAT)
 
     add_custom_target(
         format-check
-        COMMAND ${CLANG_FORMAT} --dry-run -i ${SOURCE_FILES} --style=file:${CMAKE_SOURCE_DIR}/.clang-format
+        COMMAND ${CLANG_FORMAT} --dry-run -Werror -i ${SOURCE_FILES} --style=file:${CMAKE_SOURCE_DIR}/.clang-format
         COMMENT "Run clang-format on all source and header files"
     )
 endif()
