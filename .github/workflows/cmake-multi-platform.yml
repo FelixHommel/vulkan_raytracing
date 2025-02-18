@@ -9,43 +9,6 @@ on:
     branches: [ "main", "dev" ]
 
 jobs:
-  coverage:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout/@v4
-
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y cmake clang llvm lcov ninja-build
-
-      - name: Configure Cmake
-        run: >
-          cmake -B build
-          -DCMAKE_CXX_COMPILER=clang++
-          -DCMAKE_C_COMPILER=clang
-          -DCMAKE_BUILD_TYPE=Debug
-          -S .
-
-      - name: Build
-        run: cmake --build build
-
-      - name: Test
-        run: |
-          export LLVM_PROFILE_FILE="coverage-%p.profraw"
-          cmake --build build --target test
-          llvm-profdata merge -sparse coverage-*.profraw -o coverage.profdata
-
-      - name: Generate coverage report
-        run: |
-          llvm-cov report --instr-profile=coverage.profdata --use-color \
-            --ignore-filename-regex='(tests/|external/)' --format=lcov > coverage.lcov
-
-      - name: Upload report
-        uses: coverallsapp/github-action/@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: coverage.lcov
-
   build:
     runs-on: ${{ matrix.os }}
 
