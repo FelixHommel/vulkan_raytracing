@@ -50,7 +50,7 @@ jobs:
         run: ctest --build-config ${{ matrix.config.buildType }}
 
       - name: Export environemtnt variable for coverage data
-        run: LVM_PROFILE_FILE="test.profraw" build/${{ matrix.config.buildType }}/src/test/unitTests
+        run: LVM_PROFILE_FILE="test.profraw" build/src/test/unitTests
 
       - name: Create coverage report
         run: |
