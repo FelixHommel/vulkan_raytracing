@@ -17,6 +17,12 @@ if(CLANG_FORMAT)
         COMMAND ${CLANG_FORMAT} -i ${SOURCE_FILES} --style=file:${CMAKE_SOURCE_DIR}/.clang-format
         COMMENT "Run clang-format on all source and header files"
     )
+
+    add_custom_target(
+        format-check
+        COMMAND ${CLANG_FORMAT} --dry-run -i ${SOURCE_FILES} --style=file:${CMAKE_SOURCE_DIR}/.clang-format
+        COMMENT "Run clang-format on all source and header files"
+    )
 endif()
 
 set(CMAKE_CXX_STANDARD 20)
