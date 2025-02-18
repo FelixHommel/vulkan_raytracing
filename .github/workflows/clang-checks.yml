@@ -1,0 +1,46 @@
+name: clang-tidy and clang-format
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+
+jobs:
+  clang-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y clang-tidy clang-format ninja-build
+
+      - name: Run clang-tidy
+        run: clang-tidy --quiet -p build $(find src/ -name '*.cpp')
+
+      - name: Configure CMake
+        run: |
+          cmake \
+            -B build \
+            -G Ninja
+
+      - name: run clang-format
+        run: cmake --target format
+
+      - name: Commit changes and push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "refactor: apply clang-format"
+            git push origin HEAD:${{ github.ref_name }}
+          fi
+
