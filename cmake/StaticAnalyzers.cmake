@@ -4,3 +4,8 @@ if(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g -fsanitize=address,undefined -fno-omit-frame-pointer")
     endif()
 endif()
+
+find_program(CLANG_TIDY NAMES clang-tidy)
+if(CLANG_TIDY)
+    set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY}")
+endif()
