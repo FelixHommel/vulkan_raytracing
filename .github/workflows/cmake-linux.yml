@@ -10,15 +10,23 @@ jobs:
   build:
     name: Build (${{ matrix.name }})
     runs-on: ${{ matrix.os }}
+
     strategy:
       fail-fast: false
+
       matrix:
         name: "Ubuntu Release",
-        os: [ubuntu-latest],
-        buildType: [Release],
-        cc: [gcc, clang],
-        cxx: [g++, clang++],
+        os: [ubuntu-latest]
+        buildType: [Release]
+        cc: [gcc, clang]
         generator: [Ninja]
+        include:
+          - os: ubuntu-latest
+            cc: gcc
+            ccx: g++
+          - os: ubuntu-latest
+            cc: clang
+            ccx: clang++
 
     steps:
       - name: Checkout repository
