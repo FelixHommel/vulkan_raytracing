@@ -30,7 +30,7 @@ jobs:
             -G Ninja
 
       - name: run clang-format
-        run: cmake --target format
+        run: cmake --build build --target format
 
       - name: Commit changes and push
         run: |
