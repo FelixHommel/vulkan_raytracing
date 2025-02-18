@@ -1,14 +1,3 @@
-option(ENABLE_COVERAGE "Enable code coverage" OFF)
-
-if(ENABLE_COVERAGE)
-    if(${CMAKE_CXX_COMPILER_ID} MATCHES "(Apple)?[Cc]lang")
-        message(STATUS "Building with coverage instrumentation")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
-    else()
-        message(FATAL_ERROR "Code coverage can only be generated with clang compilers")
-    endif()
-endif()
-
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
     if(NOT WIN32)
         message(STATUS "Using AddressSanitizer and UndefinedBehaviorSanitizer")
