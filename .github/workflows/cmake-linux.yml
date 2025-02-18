@@ -8,14 +8,13 @@ on:
 
 jobs:
   build:
-    name: Build (${{ matrix.name }})
+    name: Build (Ubuntu Release)
     runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
 
       matrix:
-        name: "Ubuntu Release"
         os: [ubuntu-latest]
         buildType: [Release]
         cc: [gcc, clang]
