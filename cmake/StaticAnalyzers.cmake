@@ -1,11 +1,15 @@
+option(ENABLE_COVERAGE "Enable code coverage" OFF)
+
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Release" OR ENABLE_COVERAGE)
+    if(ENABLE_COVERAGE)
+        message(STATUS "Building with coverage instrumentation")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
+    endif()
+endif()
+
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
     if(NOT WIN32)
         message(STATUS "Using AddressSanitizer and UndefinedBehaviorSanitizer")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g -fsanitize=address,undefined -fno-omit-frame-pointer")
     endif()
-endif()
-
-find_program(CLANG_TIDY NAMES clang-tidy)
-if(CLANG_TIDY)
-    set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY}")
 endif()
