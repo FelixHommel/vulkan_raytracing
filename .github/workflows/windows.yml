@@ -1,0 +1,41 @@
+name: MSVC build on Windows 
+
+on:
+  push:
+  pull_request:
+    branches: [ "main", "dev" ]
+
+jobs:
+  build:
+    name: Windows x64 (Release)
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        os: [windows-latest]
+        buildType: [Release]
+        c_compiler: [cl]
+        cxx_compiler: [cl]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: |
+          mkdir build
+          cmake `
+            -S . `
+            -B build `
+            -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }} `
+            -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} `
+            -DCMAKE_BUILD_TYPE=${{ matrix.buildType }}
+
+      - name: Build
+        run: cmake --build build --config ${{ matrix.buildType }}
+
+      - name: Test
+        run: ctest --build-config ${{ matrix.buildType }}
+
