@@ -27,14 +27,14 @@ jobs:
         run: |
           mkdir build
           cmake `
-            -S ${{ . }} `
-            -B ${{ build }} `
+            -S . `
+            -B build `
             -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }} `
             -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} `
             -DCMAKE_BUILD_TYPE=${{ matrix.buildType }}
 
       - name: Build
-        run: cmake --build ${{ build }} --config ${{ matrix.buildType }}
+        run: cmake --build build --config ${{ matrix.buildType }}
 
       - name: Test
         run: ctest --build-config ${{ matrix.buildType }}
