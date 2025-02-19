@@ -2,7 +2,10 @@ name: CMake build on Linux
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: 
+      - "main"
+      - "dev"
+      - "^[0-9]*"
   pull_request:
     branches: [ "main", "dev" ]
 
