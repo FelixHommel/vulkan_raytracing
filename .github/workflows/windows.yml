@@ -28,19 +28,10 @@ jobs:
         run: echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
       - name: Configure CMake
-        run: |
-          cmake `
-            -S ${{ github.workspace }} `
-            -B ${{ steps.strings.outputs.build-output-dir }} `
-            -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }} `
-            -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} `
-            -DCMAKE_BUILD_TYPE=${{ matrix.buildType }} `
+        run: cmake -S ${{ github.workspace }} -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.buildType }}
 
       - name: Build
-        run: |
-          cmake `
-            --build ${{ steps.strings.outputs.build-output-dir }} `
-            --config ${{ matrix.buildType }}
+        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.buildType }}
 
       - name: Test
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
