@@ -7,18 +7,18 @@ on:
 
 jobs:
   build:
-    name: ${{ matrix.name }}
+    name: ${{ matrix.name }} (${{ matrix.buildType }})
     runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
 
       matrix:
-        name: Windows MSVC x64
-        os: windows-latest
-        buildType: Release
-        cc: cl
-        cxx: cl
+        name: "Windows MSVC x64"
+        os: [windows-latest]
+        buildType: [Release]
+        c_compiler: [cl]
+        cxx_compiler: [cl]
         arch: x64
         generators: Visual Studio 17 2022
 
