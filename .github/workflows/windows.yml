@@ -23,17 +23,19 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set reusable Strings
-        id: strings
-        run: echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-
       - name: Configure CMake
-        run: cmake -S ${{ github.workspace }} -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=${{ matrix.buildType }}
+        run: |
+          mkdir build
+          cmake `
+            -S ${{ . }} `
+            -B ${{ build }} `
+            -DCMAKE_CXX_COMPILER=${{ matrix.cxx_compiler }} `
+            -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} `
+            -DCMAKE_BUILD_TYPE=${{ matrix.buildType }}
 
       - name: Build
-        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.buildType }}
+        run: cmake --build ${{ build }} --config ${{ matrix.buildType }}
 
       - name: Test
-        working-directory: ${{ steps.strings.outputs.build-output-dir }}
         run: ctest --build-config ${{ matrix.buildType }}
 
